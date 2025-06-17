@@ -25,19 +25,7 @@ spring:
     database: mysql
     database-platform: org.hibernate.dialect.MySQL8Dialect
 
-  mail:
-    host: smtp.gmail.com
-    port: 587
-    username: emedia730@gmail.com
-    password: vpeczavpmqbqcifv
-    properties:
-      mail:
-        smtp:
-          auth: true
-          starttls:
-            enable: true
-            required: true
-    protocol: smtp
+
 
   jackson:
     serialization:
@@ -51,6 +39,11 @@ management:
   endpoint:
     health:
       show-details: always
+
+
+app:
+  upload-dir: uploads/
+
 
 
 

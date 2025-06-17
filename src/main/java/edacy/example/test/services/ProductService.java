@@ -10,6 +10,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +29,7 @@ public class ProductService {
     
 
     private final CategoryRepository categoryRepository;
+    private final String baseUrl = "http://localhost:8080/api/products/images/";
     
 
 
@@ -38,11 +40,26 @@ public class ProductService {
 
     }
 
+
+
     public List<ProductDTO> getAllProducts() {
         return productRepository.findAll().stream()
-                .map(this::convertToDTO)
+                .map(product -> {
+                    ProductDTO dto = new ProductDTO();
+                    dto.setId(product.getId());
+                    dto.setName(product.getName());
+                    dto.setPrice(product.getPrice());
+                    dto.setImageUrl(baseUrl + product.getImageUrl());
+                    return dto;
+                })
                 .collect(Collectors.toList());
     }
+
+//    public List<ProductDTO> getAllProducts() {
+//        return productRepository.findAll().stream()
+//                .map(this::convertToDTO)
+//                .collect(Collectors.toList());
+//    }
     
     public Page<ProductDTO> getProductsPaginated(Pageable pageable) {
         return productRepository.findAll(pageable)
@@ -77,7 +94,7 @@ public class ProductService {
     }
     
     @Transactional
-    public ProductDTO createProduct(ProductDTO productDTO) {
+    public ResponseEntity<Product> createProduct(ProductDTO productDTO) {
         try {
             Product product = convertToEntity(productDTO);
             log.info("Create new product: " + product);
@@ -88,7 +105,7 @@ public class ProductService {
             }
             product.setCategory(category.get());
             Product savedProduct = productRepository.save(product);
-            return convertToDTO(savedProduct);
+            return ResponseEntity.ok(savedProduct);
 
         } catch (Exception e) {
             throw new RuntimeException(e);

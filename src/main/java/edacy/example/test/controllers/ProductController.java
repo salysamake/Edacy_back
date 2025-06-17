@@ -2,28 +2,63 @@ package edacy.example.test.controllers;
 
 
 import edacy.example.test.dto.ProductDTO;
+import edacy.example.test.models.Product;
 import edacy.example.test.services.ProductService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/products")
 @CrossOrigin(origins = "*")
 public class ProductController {
 
-    @Autowired
-    private ProductService productService;
-   @GetMapping
+
+    private final  ProductService productService;
+
+    public ProductController(ProductService productService) {
+        this.productService = productService;
+    }
+
+    @Value("${app.upload-dir:uploads}")
+    private String uploadDir;
+
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Product> addProduct(
+            @RequestPart("product") ProductDTO product,
+            @RequestPart("image") MultipartFile imageFile
+    ) throws IOException {
+        // Générer un nom de fichier unique
+        String filename = UUID.randomUUID() + "_" + imageFile.getOriginalFilename();
+        Path path = Paths.get(uploadDir).resolve(filename);
+
+        Files.createDirectories(path.getParent());
+        Files.copy(imageFile.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
+
+        product.setImageUrl(filename);
+
+        return productService.createProduct(product);
+    }
+
+    @GetMapping
     public ResponseEntity<List<ProductDTO>> getProducts(
            ) {
 
@@ -92,13 +127,6 @@ public class ProductController {
         Page<ProductDTO> products = productService.getProductsByPriceRange(minPrice, maxPrice, pageable);
         
         return ResponseEntity.ok(products);
-    }
-
-    @PostMapping
-   // @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ProductDTO> createProduct(@Valid @RequestBody ProductDTO productDTO) {
-        ProductDTO createdProduct = productService.createProduct(productDTO);
-        return new ResponseEntity<>(createdProduct, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
