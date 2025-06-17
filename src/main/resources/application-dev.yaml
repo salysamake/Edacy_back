@@ -1,0 +1,75 @@
+server:
+  port: 8080
+  #port: 8081
+
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/ecommerceapp?useSSL=false&useUnicode=yes&characterEncoding=UTF-8&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    username: ecommerceapp
+    password: ecommerceapp
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      minimum-idle: 10         # au repos, on garde 20 connexions chaudes
+      maximum-pool-size: 100   # en pic, 150 connexions max ===> Chaque connexion peut utuliser 10 à 20 Mo de Ram ==> EN Prod TOP ??? don't forget
+      idle-timeout: 300000     # 5 minutes d'inactivité => on ferme la connexion
+      max-lifetime: 1800000    # 30 minutes de durée de vie max
+      connection-timeout: 20000  # attente max de 20 secondes pour une connexion
+  jpa:
+    hibernate:
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+      ddl-auto: update
+    #   properties:
+    #      hibernate:
+    #         format_sql: true
+    database: mysql
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: emedia730@gmail.com
+    password: vpeczavpmqbqcifv
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+    protocol: smtp
+
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+
+#  mail:
+#    host: smtp.gmail.com
+#    port: 587
+#    username: cissokho.karim.abdou@gmail.com
+#    password: cltgzsxchhyrwigx
+#    properties:
+#      mail:
+#        smtp:
+#          auth: true
+#          starttls:
+#            enable: true
+#            required: true
+#    protocol: smtp
+
+smtp:
+  server:
+    host: "smtp.gmail.com"
+    from: "cissokho.karim.abdou@gmail.com"
+    password: "cltg zsxc hhyr wigx"
+
+
