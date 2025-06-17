@@ -52,24 +52,6 @@ management:
     health:
       show-details: always
 
-#  mail:
-#    host: smtp.gmail.com
-#    port: 587
-#    username: cissokho.karim.abdou@gmail.com
-#    password: cltgzsxchhyrwigx
-#    properties:
-#      mail:
-#        smtp:
-#          auth: true
-#          starttls:
-#            enable: true
-#            required: true
-#    protocol: smtp
 
-smtp:
-  server:
-    host: "smtp.gmail.com"
-    from: "cissokho.karim.abdou@gmail.com"
-    password: "cltg zsxc hhyr wigx"
 
 
